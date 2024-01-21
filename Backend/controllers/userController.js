@@ -1,69 +1,98 @@
-let users = [];
+const User = require("../models/userModel");  
+const authService = require("../services/authService")
 
 //add a new user to the database
-export const registerUser = async(req, res) => {
-    const {email} = req.body;
+const registerUser = async(req, res) => {
+    const {userName, email, password} = req.body;
     try {
-        //update with mongoose logic to prevent same 
-        //user create multiple accounts based on username and email id
-        let emailExists = users.findIndex(u => u.email === email);
-        console.log("DEBUG : ", emailExists)
-        
-        if(emailExists !== -1){
-            res.status(409).json({message: "email already exists in the database"});
+        const existingUser = await User.findOne({$or: [{userName} , {email}]});
+        if(existingUser){
+            return res.status(409).json({message: "User already registered in the database"});
         } else {
-            const user = {
-                ...req.body
-            }
-            users.push(user); //push to mongoose database
-            console.log("update:",users)
+            const user = await User.create({
+                userName,
+                email,
+                password
+            });
             res.status(201).json({message: "user registered successfully", user});
-            }
+        }  
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 };
 
 //get all users database
-export const getAllUsers = async(req, res) => {
+const getAllUsers = async(req, res) => {
     try {
-        res.status(200).json({ message: users});
+        const allUsers = await User.find({});
+        res.status(200).json({ message:  allUsers});
     } catch (error) {
         res.status(500).json({ message: "DATABASE ERROR"})
     }
 };
 
-//update user information
-export const updateUser = async(req, res) => {
+const getOneUserDetails = async(req, res) => {
     try {
-        const updatedUserIndex = users.findIndex( u => u.email === req.params.email);
-        if(updatedUserIndex === -1) {
-            res.status(404).json({message: "User not found in database"});
-        }
-        else{
-            users[updatedUserIndex].firstName = req.body.firstName;
-            users[updatedUserIndex].lastName = req.body.lastName;
-            users[updatedUserIndex].userName = req.body.userName;
-            users[updatedUserIndex].email = req.params.email;
-            users[updatedUserIndex].password = req.body.password;
-            res.status(200).json({ message: "User updated Successfully", users} );
-            console.log("Updated user", users[updatedUserIndex]);
-        }
+        const userId = req.params.userId;
+        const user = await User.findOne({_id : userId});
+        res.status(200).json({ UserData: user});
+    } catch (error) {
+        res.status(404).json({ message: error.message});
+    }
+};
+
+//update user information
+const updateUser = async(req, res) => {
+    try {
+        // console.log("inside updateUser controller from verify",);
+        const {userName, email, password} = req.body;
+        // await User.find({email}).then();
+        
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 };
 
-export const deleteUser = async(req, res) => {
+//delete user
+const deleteUser = async(req, res) => {
     try {
-        const userIndex = users.findIndex(u => u.email === req.params.email); //mongoose query
-        if(userIndex === -1){
-            res.status(404).json({message: "user not found"});
-        } else {
-            users.splice(userIndex, 1);
-            res.status(200).json({message: "User deleted successfully"});
-        }    
+        const userId = req.params.userId;
+        await User.findByIdAndDelete({ _id : userId})
+        .then(() => {
+            res.status(200).json({ message: "User deleted Successfully"})
+        })
+        .catch((e) => { 
+            res.status(404).json({message: "User not found"})
+        });
+        // console.log("inside delete user call", userId);    
     } catch (error) {
         res.status(400).json({ message : error.message});
     }
 };
+
+
+//login {this will be a post request}
+const loginUser = async(req, res) => {
+    try {
+        const {userName, password} = req.body;
+        const user = await authService.loginUser(userName, password);
+        if(!user){
+            res.status(404).json({message: "Invalid UserName or Password"});
+        } else {
+            //modify according to future user// DO NOT SEND PASSWORD OVER RESPONSE token: user.token
+            return res.status(200).json({ message: "User logged in successfully", user});
+        }  
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+};
+
+module.exports = { 
+    deleteUser,
+    updateUser, 
+    getAllUsers, 
+    registerUser, 
+    loginUser, 
+    getOneUserDetails, 
+};
+//create group 
