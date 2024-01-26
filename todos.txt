@@ -3,5 +3,12 @@
 2.Change password
 
 #BEFORE DEPLOYMENT
-1.set radixUI themepanel from app root in frontend
+
 2. set .env file
+
+#FRONTEND
+1. complete navbar 
+2. login and register page
+3. authenticated routes to the home page 
+
+#BACKEND
