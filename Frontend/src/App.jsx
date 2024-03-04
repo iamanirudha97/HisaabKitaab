@@ -1,8 +1,9 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Login from './pages/login-page/Login'
+// import Login from './pages/login-page/Login'
+// import Register from './pages/register-page/Register'
 import Navbar from './components/navbar/Navbar'
-import Register from './pages/register-page/Register'
+
 import Home from './pages/home/Home'
 import Profile from './pages/profile/Profile'
 import ContactUs from './pages/contact-us/ContactUs'
@@ -14,8 +15,6 @@ function App() {
     "/": <Home />,
     "/profile": <Profile />,
     "/contact": <ContactUs />,
-    "/login" : <Login />,
-    "/register": <Register />,
   }
 
   return (

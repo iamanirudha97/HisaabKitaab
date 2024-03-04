@@ -1,11 +1,11 @@
 //mongodb+srv://sagarlm97:7DrFza1SBqs7IrAF@cluster0.yioapxi.mongodb.net/
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const connectToDatabase = async() => {
     try {
         await mongoose.connect("mongodb+srv://sagarlm97:7DrFza1SBqs7IrAF@cluster0.yioapxi.mongodb.net/",
-        // { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses" }
+        // { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses" } mongodb+srv://sagarlm97:<password>@cluster0.yioapxi.mongodb.net/
         {
            dbName: "HisaabKitaab" 
         })
@@ -19,4 +19,4 @@ const connectToDatabase = async() => {
     }
 };
 
-module.exports = connectToDatabase;
+export default connectToDatabase;
